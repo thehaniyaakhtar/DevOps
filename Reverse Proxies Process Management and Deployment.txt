@@ -1,0 +1,144 @@
+Elastic Computing 
+Elastic computing refers to the ability to dynamically allocate and release computing resources (CPU, RAM, storage) based on demand. 
+This is a core feature of cloud platforms like Amazon Web Services, allowing systems to scale up or down without manual hardware changes.
+
+EC2 Instance Basics
+An EC2 (Elastic Compute Cloud) instance is a virtual machine in the cloud.
+
+Instance States
+An EC2 instance can exist in different states:
+
+Pending: Instance is being launched
+Running: Instance is active and usable
+Stopped: Instance is shut down but not deleted
+Terminated: Instance is permanently deleted
+
+Elastic IP
+An Elastic IP is a static public IP address that can be attached to an EC2 instance. 
+Unlike regular public IPs, it does not change when the instance is restarted, making it useful for stable access.
+
+Security Groups
+Security groups act as virtual firewalls for your EC2 instance. 
+They control inbound and outbound traffic.
+
+You define rules based on:
+  Protocol   (e.g., TCP)
+  Port   (e.g., 22 for SSH, 80 for HTTP, 3000 for apps)
+  Source   (IP ranges allowed)
+
+Example:
+  Allow   TCP on port 22   → enables SSH access
+  Allow   TCP on port 3000   → enables access to your app
+
+
+Instance Types  
+Instance types define the hardware configuration of your VM (CPU, memory, networking capacity). Different types are optimized for different workloads 
+(compute-heavy, memory-heavy, etc.).
+
+Steps to Create an EC2 Instance  
+
+1. Go to EC2 dashboard → Launch Instance
+2. Assign a   name   to the VM
+3. Select an   Operating System (OS)   and version (e.g., Ubuntu)
+4. Choose an   instance type   (based on required resources)
+5. Create or select a   key pair   (used for SSH authentication)
+6. Configure   security groups  :
+     Open port   22   (SSH)
+     Open port   3000   (or any app port you need)
+7. Add   storage   (e.g., 15 GB)
+8. Launch the instance
+
+You then connect using:
+```
+ssh -i filename.pem user@public_ip
+```
+File Permissions (Linux)  
+Each file has permissions that control access:
+Example:
+
+```
+-rw-r--r--
+```
+
+This represents:
+  Owner  : read (r), write (w)
+  Group  : read (r)
+  Others  : read (r)
+
+Permission Values (RWE System)  
+  Read (r) = 4
+  Write (w) = 2
+  Execute (x) = 1
+
+Examples:
+  `7 (111)` → read + write + execute
+  `6 (110)` → read + write
+  `4 (100)` → read only
+
+Common Case  
+
+`644`:
+
+  Owner: read + write
+  Group: read
+  Others: read
+
+Fixing Key Permission Error  
+
+Private key files must be restricted:
+
+```
+chmod 700 filename.pem
+```
+
+This ensures only the owner has full access.
+
+Nginx (Web Server & Reverse Proxy)
+
+Nginx is an open-source software used for:
+
+  Web serving
+  Reverse proxying
+  Load balancing
+  Caching
+
+Ports and Web Traffic
+  HTTP runs on port 80
+  HTTPS runs on port 443
+
+When a user visits a website without specifying a port, the browser automatically uses these defaults.
+
+If your app runs on port `3000`, users must visit:
+
+http://your-ip:3000
+
+Reverse Proxy Concept
+
+Only one service can directly listen on a specific port (e.g., 80). To handle multiple applications:
+
+Run apps on different ports:
+
+  App A → port 3000
+  App B → port 3001
+
+Use Nginx as a reverse proxy:
+  Nginx runs on port 80
+  It forwards requests to the correct app based on the URL
+
+Example:
+
+`/app1` → forwarded to port 3000
+`/app2` → forwarded to port 3001
+
+This allows multiple services to appear under one domain.
+
+Installing and Running Nginx
+
+commands:
+ sudo apt update
+ sudo apt install nginx
+
+Start Nginx:
+ sudo systemctl start nginx
+
+Now your server can accept traffic on port 80 and route it internally.
