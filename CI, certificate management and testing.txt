@@ -1,0 +1,145 @@
+Environments: Dev, Staging, Production
+
+Software systems are typically deployed across three environments:
+
+Development (Dev):
+  Used for active development and testing by developers. Frequent changes happen here.
+
+Staging:
+  A pre-production environment that closely mirrors production. Used for final testing before release.
+
+Production (Prod):
+  The live environment where real users access the application. Stability and reliability are critical.
+
+SSH Keys (Public & Private Key Authentication)
+
+SSH authentication uses a pair of cryptographic keys:
+
+  Private Key: Stored securely on the client (your machine or CI/CD system).
+  Public Key: Stored on the server in `~/.ssh/authorized_keys`.
+
+If Machine A has the private key and Machine B has the corresponding public key, Machine A can securely connect to Machine B without a password.
+
+SSH in CI/CD Pipelines
+
+In CI/CD workflows, the private SSH key is stored securely (e.g., in GitHub Secrets).
+This allows automated systems to:
+
+ SSH into servers
+ Pull latest code
+ Build and redeploy applications
+
+This enables fully automated deployments.
+
+CI/CD (Continuous Integration & Continuous Deployment)
+
+CI/CD automates the process of testing and deploying code.
+
+Typical Flow
+
+  Continuous Integration (CI):
+
+  Triggered when a pull request (PR) is created
+  Steps:
+
+    1. Clone the repository into a fresh environment (e.g., Ubuntu machine)
+    2. Install dependencies
+    3. Run checks (linting, formatting, tests like Prettier)
+    4. Fail the PR if checks do not pass
+
+  Continuous Deployment (CD):
+
+  Triggered when code is merged (e.g., push to `main` branch)
+  Automatically deploys the latest version to a server
+
+Environment-Based Deployment
+
+  Push to `main` branch → deploy to **Dev server/cluster**
+  Push to production branch (or manual approval) → deploy to **Prod server/cluster**
+
+GitHub Actions Workflow
+
+GitHub Actions uses YAML files to define workflows.
+
+Located inside:
+
+```
+.github/workflows/
+```
+
+ A workflow defines:
+
+  Triggers (e.g., pull request, push to branch)
+  Jobs (tasks to run)
+  Steps inside each job
+
+Example CI Workflow Logic
+
+When a pull request is created:
+
+1. Spin up a fresh Ubuntu environment
+2. Clone the repository
+3. Install dependencies (e.g., using `pnpm`)
+4. Run formatting/lint checks (e.g., Prettier)
+5. Run tests
+6. Approve or reject PR based on results
+
+CD Pipeline (Deployment Flow)
+
+When code is pushed to the main branch:
+
+1. Trigger GitHub Actions workflow
+2. Use stored SSH private key to connect to the server
+3. Execute deployment commands:
+
+   ```bash
+   cd project-directory
+   git pull origin main
+   pnpm install
+   pnpm run build
+   pm2 restart all
+   ```
+4. Application is updated live
+
+Server Setup for Deployment**
+
+Typical setup (for Dev/Prod servers):
+
+1. Create **two servers** (Dev and Prod)
+2. Install required tools:
+
+   Node.js
+   Nginx
+   `pnpm` (package manager)
+   PM2
+
+3. Clone the project (monorepo) onto both servers
+4. Start application processes using PM2 (e.g., multiple services)
+5. Configure domain names to point to respective servers
+6. Configure and reload Nginx to route traffic
+7. Test deployment
+
+PM2 (Process Manager)
+
+PM2 is used to:
+
+  Run Node.js applications in the background
+  Restart apps automatically if they crash
+  Manage multiple processes
+
+Useful commands:
+
+```bash
+pm2 list        # View running processes
+pm2 restart all # Restart all apps
+```
+
+End-to-End Flow Summary
+
+1. Developer creates a PR → CI pipeline runs checks
+2. PR is merged → CD pipeline triggers
+3. GitHub Actions SSH into server
+4. Pull latest code + build
+5. Restart processes using PM2
+6. Nginx routes traffic to updated services
+7. Application is live
