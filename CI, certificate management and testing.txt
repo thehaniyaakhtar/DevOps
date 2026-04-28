@@ -20,7 +20,7 @@ SSH authentication uses a pair of cryptographic keys:
 
 If Machine A has the private key and Machine B has the corresponding public key, Machine A can securely connect to Machine B without a password.
 
-SSH in CI/CD Pipelines
+SSH in CI/CD Pipelines:
 
 In CI/CD workflows, the private SSH key is stored securely (e.g., in GitHub Secrets).
 This allows automated systems to:
