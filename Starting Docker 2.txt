@@ -1,0 +1,108 @@
+Docker Layers (How Images Are Built)
+Docker images are built in layers, where each instruction in a Dockerfile 
+creates a new layer on top of the previous one. You can think of it as 
+stacking changes, where every step modifies the filesystem incrementally.
+
+The process begins with a base layer:
+
+FROM node
+
+This acts as the foundation, similar to an operating system or runtime 
+environment.
+
+Each subsequent instruction creates its own layer. For example:
+
+WORKDIR /app sets the working directory
+COPY adds files into the container
+RUN npm install installs dependencies
+EXPOSE 3000 documents which port the app uses
+CMD ["node", "index.js"] defines the process to run when the container starts
+
+All of these together form the final image.
+
+Why Layers Matter
+Layers make Docker efficient and scalable.
+They are reusable and cached. If multiple images use the same base image or 
+share common steps, Docker reuses those layers instead of rebuilding them. 
+This reduces build time and storage usage.
+
+They are immutable. Once a layer is created, it cannot be modified. 
+If anything changes, Docker creates a new layer rather than editing the old 
+one. This ensures consistency and allows different images to share 
+unchanged layers safely.
+
+They also enable smart caching. When you rebuild an image, Docker checks 
+each step. If nothing has changed in a step, it uses the cached version. 
+If a change occurs (for example, in your source code), only that step and 
+the ones after it are rebuilt.
+
+Optimizing Docker Builds
+A common mistake is copying all source code before installing dependencies. 
+This breaks caching because any small code change forces npm install to run 
+again.
+
+An optimized approach is:
+
+FROM node
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+CMD ["node", "index.js"]
+
+Here, dependencies are installed before copying the full source code. 
+Since dependency files change less frequently, Docker can cache the 
+expensive npm install step and reuse it across builds.
+
+Volumes (Data Persistence)
+Containers are designed to be stateless, meaning their data is lost when 
+they stop or are removed. However, some applications like databases need 
+persistent storage.
+
+Docker volumes solve this by storing data outside the container’s lifecycle.
+You can create a volume:
+
+docker volume create mongo_db_data
+Then mount it when running a container:
+
+docker run -p 27017:27017 -v mongo_db_data:/data/db mongo
+
+Here, /data/db inside the container is mapped to a persistent volume. 
+Even if the container is deleted, the data remains as long as the volume 
+exists.
+
+Docker Networking (Container Communication)
+By default, containers are isolated. To allow multiple containers (like a 
+backend and a database) to communicate, they must be connected through a 
+Docker network.
+
+The typical workflow is:
+
+Build your application image
+Create a network
+Start containers attached to that network
+
+Example:
+
+docker network create my_network
+
+Run backend:
+
+docker run --network my_network backend_image
+
+Run database:
+
+docker run --network my_network mongo
+
+Both containers can now communicate using container names as hostnames.
+
+End-to-End Flow
+
+In a real setup, you build your application image, optimize it using 
+layered caching, attach persistent storage using volumes if needed, and 
+connect multiple containers using networks. This allows you to run complete 
+systems (like backend + database) in isolated yet connected environments.
