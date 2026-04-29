@@ -1,6 +1,6 @@
 Docker Layers (How Images Are Built)
 Docker images are built in layers, where each instruction in a Dockerfile 
-creates a new layer on top of the previous one. You can think of it as 
+creates a new layer on top of the previous one. You can think of it like
 stacking changes, where every step modifies the filesystem incrementally.
 
 The process begins with a base layer:
@@ -101,7 +101,6 @@ docker run --network my_network mongo
 Both containers can now communicate using container names as hostnames.
 
 End-to-End Flow
-
 In a real setup, you build your application image, optimize it using 
 layered caching, attach persistent storage using volumes if needed, and 
 connect multiple containers using networks. This allows you to run complete 
