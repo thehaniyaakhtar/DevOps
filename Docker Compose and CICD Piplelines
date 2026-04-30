@@ -1,0 +1,118 @@
+Basic Mental Model
+
+GitHub stores your source code. When you run it, you are starting a process 
+on your machine.
+
+Docker Hub stores Docker images. When you run an image, you are starting a 
+container, which is an isolated running instance of that image.
+
+Core Docker Commands
+docker ps               # list all running containers
+docker images           # list all available images
+docker kill <id>        # stop a running container
+docker rmi <image_id>   # remove an image
+Docker Compose
+
+Docker Compose is a tool used to define and run multi-container applications
+using a single YAML file. Instead of manually running multiple docker run 
+commands, you define services (e.g., backend, database), networks, and 
+volumes in one file.
+
+All containers started through Docker Compose are automatically connected 
+through a shared network, allowing them to communicate easily.
+
+It is primarily used for local development and testing rather than 
+production deployment, where more advanced orchestration tools 
+(like Kubernetes) are preferred.
+
+You typically start everything with:
+
+docker-compose up
+Running an Express + Prisma Project
+Manual Installation (Without Docker)
+
+This requires setting up everything directly on your system:
+
+Update .env with database credentials
+Run database migrations
+Generate ORM client
+Build and start the app
+npx prisma migrate      # apply database schema changes
+npx prisma generate     # generate Prisma client
+npm run build           # compile project
+npm run start           # start server
+Docker-Based Installation
+
+This approach removes the need to install dependencies locally and ensures 
+consistency.
+
+docker network create user_project  
+# create an isolated network so containers can talk to each other
+
+docker run --network user_project --name postgres \
+-e POSTGRES_PASSWORD=your_password \
+-d -p 5432:5432 postgres  
+# start PostgreSQL container
+# attaches it to the network
+# sets password via environment variable
+# runs in detached mode (-d)
+# maps container port 5432 to host port 5432
+
+docker build -t user_app .  
+# build Docker image from Dockerfile in current directory
+
+docker run --network user_project -p 3000:3000 user_app  
+# start your backend container
+# attaches to same network so it can access postgres
+# exposes app on port 3000
+Docker Compose Installation
+
+With Docker Compose, the above setup is simplified into a single 
+configuration file.
+
+Steps:
+
+Install Docker and Docker Compose
+Define services (backend + database) in docker-compose.yml
+Run everything together:
+docker-compose up
+# builds images (if needed) and starts all services together
+CI/CD Pipeline with Docker
+
+Docker integrates cleanly into CI/CD pipelines, enabling consistent builds 
+and deployments.
+
+Using GitHub Actions as an example:
+
+CI (Build and Validate)
+
+When a pull request is created:
+
+Clone repository
+Build Docker image
+Run tests inside container
+Fail if anything breaks
+CD (Deploy)
+
+When code is pushed to the main branch:
+
+Build a new Docker image
+Tag the image (e.g., latest or commit hash)
+Push the image to Docker Hub
+SSH into the server using stored secrets
+Pull the latest image on the server
+Stop old container and start new one
+
+Example deployment logic:
+
+docker pull username/app:latest        # fetch latest image
+docker stop app_container             # stop old container
+docker rm app_container               # remove old container
+docker run -d -p 3000:3000 --name app_container username/app:latest  
+# start updated container
+End-to-End Flow
+
+You write code and push it to GitHub. A CI/CD pipeline builds a Docker 
+image and pushes it to Docker Hub. Your server then pulls that image and 
+runs it as a container. This removes dependency issues and ensures the same 
+environment runs everywhere.
