@@ -114,5 +114,5 @@ End-to-End Flow
 
 You write code and push it to GitHub. A CI/CD pipeline builds a Docker 
 image and pushes it to Docker Hub. Your server then pulls that image and 
-runs it as a container. This removes dependency issues and ensures the same 
+runs it as a container. This removes any dependency issues and ensures the same 
 environment runs everywhere.
