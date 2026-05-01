@@ -38,14 +38,14 @@ Instance types define the hardware configuration of your VM (CPU, memory, networ
 Steps to Create an EC2 Instance  
 
 1. Go to EC2 dashboard → Launch Instance
-2. Assign a   name   to the VM
-3. Select an   Operating System (OS)   and version (e.g., Ubuntu)
-4. Choose an   instance type   (based on required resources)
-5. Create or select a   key pair   (used for SSH authentication)
-6. Configure   security groups  :
-     Open port   22   (SSH)
-     Open port   3000   (or any app port you need)
-7. Add   storage   (e.g., 15 GB)
+2. Assign a name to the VM
+3. Select an Operating System (OS) and version (e.g., Ubuntu)
+4. Choose an instance type (based on required resources)
+5. Create or select a key pair (used for SSH authentication)
+6. Configure security groups:
+     Open port 22 (SSH)
+     Open port 3000 (or any app port you need)
+7. Add storage (e.g., 15 GB)
 8. Launch the instance
 
 You then connect using:
@@ -61,9 +61,9 @@ Example:
 ```
 
 This represents:
-  Owner  : read (r), write (w)
-  Group  : read (r)
-  Others  : read (r)
+  Owner: read (r), write (w)
+  Group: read (r)
+  Others: read (r)
 
 Permission Values (RWE System)  
   Read (r) = 4
