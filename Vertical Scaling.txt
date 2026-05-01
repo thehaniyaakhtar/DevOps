@@ -1,0 +1,63 @@
+Vertical Scaling
+
+Vertical scaling means increasing the capacity of a single machine to handle more load. This is done by upgrading hardware, such as adding more CPU cores, RAM, or better storage.
+
+It improves performance without changing the system architecture, but it has limits because a single machine can only scale so far.
+
+Context Switching in Operating Systems
+
+A CPU does not dedicate itself to a single application. Instead, the operating system rapidly switches between multiple processes. This is called context switching.
+
+Each process gets a small time slice of CPU execution. Because this switching happens extremely fast, it creates the illusion that multiple applications are running simultaneously, even on a single core.
+
+JavaScript and Single-Threading
+
+JavaScript (as used in Node.js) is single-threaded at the application level. This means one process runs on one thread and can only fully utilize one CPU core at a time.
+
+Because of this, simply increasing CPU cores (vertical scaling) does not automatically improve performance for a single Node.js process.
+
+Multi-Core Utilization Problem
+
+If you run only one Node.js process on a machine with multiple CPU cores, most of the cores remain underutilized. This is why vertical scaling alone is inefficient for Node.js unless you explicitly use multiple processes.
+
+Multi-Threaded Languages
+
+Languages like Rust support true multi-threading. They can spawn multiple threads within a single process, allowing different parts of a program to run in parallel and fully utilize multiple CPU cores.
+
+This enables better use of hardware compared to single-threaded execution.
+
+Using All CPU Cores in Node.js
+
+To utilize all cores in Node.js, you run multiple processes instead of relying on a single one.
+
+If a machine has n CPU cores, you typically run n processes.
+
+Node.js provides the cluster module for this purpose:
+
+It creates a parent (master) process
+The parent forks multiple child processes (workers)
+Each worker runs the same application
+
+All workers can share the same port, and incoming requests are distributed among them.
+
+Cluster Module Behavior
+
+The cluster module allows multiple Node.js processes to listen on the same port. Internally, the system distributes incoming requests across these processes.
+
+This improves throughput because:
+
+Each process runs on its own CPU core
+Multiple requests can be handled in parallel
+Important Correction (Request Handling)
+
+The idea that “requests from the same browser always go to the same process” is not generally true.
+
+In reality:
+
+Requests are distributed by the cluster (or OS/load balancer)
+Any request can be handled by any available worker process
+There is no guaranteed one-to-one mapping between a browser and a process
+Performance Implication
+A single Node.js process can use up to 100% of one CPU core
+Multiple processes allow you to use multiple cores
+This increases total throughput (more requests handled), not the speed of a single request
