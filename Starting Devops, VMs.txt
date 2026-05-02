@@ -1,58 +1,114 @@
 Localhost
-Localhost refers to the computer you are currently working on. It uses a loopback address (typically `127.0.0.1`) that allows the machine to 
-communicate with itself over a network interface. It can also be accessed using the domain name `localhost`.
+Localhost refers to the computer you are currently working on. It uses a loopback address (typically 127.0.0.1) that allows the machine to communicate with itself over a network interface. It can also be accessed using the domain name localhost.
+
+A key detail is that localhost always refers to the current machine. If another device tries to access localhost, it will point to itself, not your system. To access your server from another device, your private IP address must be used instead.
 
 Ping and Domain Resolution
-The `ping` command is used to check connectivity between your system and a domain. It also resolves the domain name to its corresponding IP address, 
-helping verify whether the target server is reachable.
+The ping command is used to check connectivity between your system and a domain. It also resolves the domain name to its corresponding IP address.
+If ping works, it confirms:
+
+DNS resolution is functioning
+Basic network connectivity exists
+
+If a website still fails to load in a browser despite a successful ping, the issue is likely at a higher level, such as HTTP/HTTPS, firewall restrictions, or TLS configuration—not general internet connectivity.
 
 IP Address (IPv4)
-An IPv4 address consists of four octets separated by dots, where each octet ranges from 0 to 255 (e.g., `192.168.1.1`). 
-It uniquely identifies a device on a network.
+An IPv4 address consists of four octets separated by dots, where each octet ranges from 0 to 255 (e.g., 192.168.1.1). It uniquely identifies a device on a network.
 
 Local Network and Private IPs
-Devices connected to the same router (e.g., multiple laptops on the same Wi-Fi network) can communicate with each other using private IP addresses. 
-This enables local hosting and resource sharing within the network without exposing services to the internet. (mild hosting)
+Devices connected to the same router (e.g., multiple laptops on the same Wi-Fi network) can communicate using private IP addresses (e.g., 192.168.x.x).
 
-Network Configuration (`ifconfig`)
-The `ifconfig` command displays network interfaces and their configurations:
-`lo0`: The loopback interface (localhost communication).
-`en0`: Typically the Wi-Fi interface, showing the device’s local/private IP address.
+If a service is running on one device, another device must use:
+http://<private-ip>:<port>
+
+Using localhost will fail because it refers to the requesting device, not the host machine.
+
+Network Configuration (ifconfig)
+The ifconfig command displays network interfaces:
+
+lo0: Loopback interface (127.0.0.1), used only for internal communication
+en0: Network interface (Wi-Fi/Ethernet), showing the device’s private IP
+
+For external access within a local network, the en0 address is the relevant one.
 
 Serving Files on a Port
-Running a local server binds your file system to a specific port (e.g., `localhost:3000`). Other devices on the same network can access it using 
-your private IP address and port. However, open ports can be discovered through port scanning, which may expose hosted files if not secured.
+Running a local server binds a process to a specific port (e.g., localhost:3000).
+
+For the service to be accessible by other devices:
+It must be bound to 0.0.0.0 or the private IP (not just 127.0.0.1)
+The port must be open and listening
+
+If these conditions are met, the service becomes discoverable on the network. Tools like port scanners can detect open ports, which is why unsecured services can be exposed unintentionally.
 
 DNS Manipulation and Phishing Risk
-When you open a website, your system resolves a domain name to an IP address. If this mapping is altered locally (e.g., via a hosts file), 
-a legitimate domain can be redirected to a fake server. This technique can be used to mimic real websites and potentially steal user credentials.
+When accessing a website, your system resolves the domain name to an IP address using DNS.
+If this mapping is overridden locally (e.g., via the hosts file), the domain can be redirected. For example:
+
+instagram.com → 127.0.0.1
+
+This forces the request to go to your own machine instead of the real server. If a fake service is running locally, it can mimic the original site and capture credentials, making this a common phishing technique.
 
 Self-Hosting vs Cloud Hosting
-Self-hosting involves running services on your own hardware, giving full control but requiring maintenance and setup. 
-Cloud hosting provides managed infrastructure, scalability, and convenience, but comes at a higher cost.
+Self-hosting involves running services on your own hardware. This provides full control but introduces risks:
+
+Downtime if your machine shuts down
+Inaccessibility if your internet connection fails
+
+Cloud hosting platforms like Amazon Web Services provide:
+High availability
+Reliable networking
+Redundant infrastructure
+
+This significantly improves uptime and accessibility compared to local hosting.
 
 Virtual Machines (VMs)
-A virtual machine is a software-based emulation of a physical computer. A hypervisor sits on top of physical hardware (CPU, RAM, storage) and 
-allocates resources dynamically to multiple VMs. Each VM operates independently with its own operating system.
+A virtual machine is a software-based emulation of a physical computer. A hypervisor sits between the hardware and VMs, allocating CPU, memory, and storage.
+
+Execution path:
+Application → Guest OS → Hypervisor → Hardware
+
+Because resources are virtualized and shared, there is added latency and resource mediation.
 
 Bare Metal Servers
-A bare metal server is a physical machine dedicated to a single user or organization. It does not use a hypervisor, which allows maximum performance 
-and control. However, resources cannot be dynamically shared or reallocated as in virtualized environments. 
-This setup is often used in high-performance workloads such as blockchain mining.
+A bare metal server is a physical machine dedicated to a single user. It does not use a hypervisor.
+
+Execution path:
+Application → OS → Hardware
+
+This results in:
+Direct hardware access
+No virtualization overhead
+Better performance under heavy workloads
+
+Unlike VMs, resources are not shared or dynamically reallocated, but performance is more predictable and efficient.
 
 SSH (Secure Shell) Protocol
-SSH is a cryptographic network protocol used to securely connect to remote systems. It allows users to log into remote machines, 
-execute commands, and transfer files securely.
+SSH is a cryptographic protocol used to securely connect to remote systems. It enables remote command execution and secure file transfer.
 
 Key features:
-Encryption: Protects data during transmission.
-Authentication: Supports password-based and public key-based authentication.
-Integrity: Ensures data is not altered during transmission.
-
+Encryption: Protects data in transit
+Authentication: Supports password and key-based login
+Integrity: Ensures data is not tampered with
 SSH Key-Based Authentication
-In public key authentication:
-* A key pair (public and private key) is generated.
-* The public key is stored on the remote machine in the `~/.ssh/authorized_keys` file.
-* The private key remains on the client machine.
 
-When connecting using `ssh user@ip_address`, the server verifies the client using the stored public key, allowing secure access without a password.
+In public key authentication:
+A key pair (public and private) is generated
+The public key is stored on the server in ~/.ssh/authorized_keys
+The private key remains on the client
+
+When connecting:
+The client initiates a request
+The server checks for the client’s public key
+The server sends a challenge
+The client signs it using the private key
+The server verifies the signature using the public key
+
+If verified, access is granted without a password.
+
+SSH File Permissions
+Private keys must be securely restricted. If permissions are too open (e.g., 777), SSH rejects the key because it could be accessed by other users.
+
+Secure permissions:
+chmod 600 filename.pem
+
+This ensures only the owner can read or modify the key, preserving its confidentiality.
