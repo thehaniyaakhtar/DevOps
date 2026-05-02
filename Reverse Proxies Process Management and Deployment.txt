@@ -33,6 +33,7 @@ Limited in number
 Used for stable domain mapping
 Security Groups
 
+Security Groups
 Security groups act as virtual firewalls for your EC2 instance.
 They control inbound and outbound traffic.
 
