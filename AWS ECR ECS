@@ -1,0 +1,131 @@
+ECR (Elastic Container Registry)
+
+Amazon Elastic Container Registry is a fully managed Docker container
+registry provided by Amazon Web Services.
+
+It is used to store, manage, and deploy Docker container images, 
+making it easier to work with containerized applications in a cloud environment.
+
+Key features:
+Private repositories: Securely store container images
+AWS integration: Works seamlessly with ECS and EKS
+Faster image pulls: Images hosted within AWS are pulled faster than external registries like Docker Hub when used inside AWS infrastructure
+Scalability: Automatically handles storage growth and image management
+Typical ECR Workflow
+Create a new ECR repository
+Install AWS CLI locally
+
+Configure credentials:
+aws configure
+
+(use access key and secret with limited permissions, not full access)
+
+Authenticate Docker with ECR:
+aws ecr get-login-password | docker login
+
+Build Docker image:
+docker build -t app_name .
+
+Tag image for ECR:
+docker tag app_name:latest <account_id>.dkr.ecr.<region>.amazonaws.com/app_name
+
+Push image:
+docker push <account_id>.dkr.ecr.<region>.amazonaws.com/app_name
+
+Now the image is stored in ECR and ready for deployment.
+
+ECS (Elastic Container Service)
+Amazon Elastic Container Service is a fully managed container 
+orchestration service.
+
+It allows you to run, manage, and scale Docker containers without 
+manually handling infrastructure.
+
+Core Concepts in ECS
+Cluster
+A cluster is a logical grouping of compute resources where containers 
+run.
+
+Two types:
+
+EC2 Cluster:
+Uses EC2 instances as underlying servers
+Fargate Cluster:
+Serverless—AWS manages infrastructure completely
+Task Definition
+
+A task definition is a blueprint for your application. It specifies:
+Docker image (from ECR)
+CPU and memory requirements
+Port mappings
+Environment variables
+
+Task
+A task is a running instance of a task definition.
+It is the smallest unit of execution in ECS.
+
+Service
+A service is a higher-level abstraction that manages tasks.
+
+It ensures:
+A specified number of tasks are always running
+Failed tasks are automatically replaced
+Tasks scale up or down based on demand
+ECS Architecture (End-to-End Flow)
+Docker image is pushed to ECR
+ECS pulls the image from ECR
+A task definition specifies how to run the container
+A service ensures required number of tasks are running
+Tasks run inside a cluster (EC2 or Fargate)
+Fargate (Serverless Containers)
+
+AWS Fargate allows running containers without managing servers.
+
+Instead of provisioning EC2 instances:
+You define CPU and memory
+AWS handles infrastructure, scaling, and provisioning
+Scaling in ECS
+
+ECS supports automatic scaling:
+Increase number of tasks when traffic increases
+Decrease when demand drops
+
+This ensures efficient resource usage and high availability.
+
+Integration with Other AWS Services
+
+ECS integrates with:
+Elastic Load Balancer (ELB): Distributes incoming traffic
+IAM: Controls permissions securely
+CloudWatch: Monitors logs and metrics
+Load Balancing and Traffic Flow
+
+A load balancer sits in front of ECS services:
+Listens on port 80 (HTTP) or 443 (HTTPS)
+Routes traffic to running tasks
+
+This ensures:
+High availability
+Fault tolerance
+Even traffic distribution
+SSL and Domain Setup
+
+To enable HTTPS:
+Use AWS Certificate Manager to request an SSL certificate
+Validate domain ownership (via DNS records)
+Attach certificate to load balancer
+
+Important:
+
+Load balancer should expose:
+Port 80 (HTTP)
+Port 443 (HTTPS)
+Putting It All Together (Full Flow)
+Build Docker image locally
+Push image to ECR
+Create ECS cluster (EC2 or Fargate)
+Define task definition (image + config)
+Create service (maintains tasks)
+Attach load balancer
+Configure domain + SSL
+Users access app via domain → load balancer → ECS tasks
