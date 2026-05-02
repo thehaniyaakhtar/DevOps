@@ -1,22 +1,28 @@
 Localhost
-Localhost refers to the computer you are currently working on. It uses a loopback address (typically 127.0.0.1) that allows the machine to communicate with itself over a network interface. It can also be accessed using the domain name localhost.
+Localhost refers to the computer you are currently working on. It uses a loopback address (typically 127.0.0.1) that allows the machine 
+to communicate with itself over a network interface. 
+It can also be accessed using the domain name localhost.
 
-A key detail is that localhost always refers to the current machine. If another device tries to access localhost, it will point to itself, not your system. To access your server from another device, your private IP address must be used instead.
+A key detail is that localhost always refers to the current machine. If another device tries to access localhost, it will point to itself, 
+not your system. To access your server from another device, your private IP address must be used instead.
 
 Ping and Domain Resolution
 The ping command is used to check connectivity between your system and a domain. It also resolves the domain name to its corresponding IP address.
-If ping works, it confirms:
 
+If ping works, it confirms:
 DNS resolution is functioning
 Basic network connectivity exists
 
-If a website still fails to load in a browser despite a successful ping, the issue is likely at a higher level, such as HTTP/HTTPS, firewall restrictions, or TLS configuration—not general internet connectivity.
+If a website still fails to load in a browser despite a successful ping, the issue is likely at a higher level, such as HTTP/HTTPS, 
+firewall restrictions, or TLS configuration—not general internet connectivity.
 
 IP Address (IPv4)
-An IPv4 address consists of four octets separated by dots, where each octet ranges from 0 to 255 (e.g., 192.168.1.1). It uniquely identifies a device on a network.
+An IPv4 address consists of four octets separated by dots, where each octet ranges from 0 to 255 (e.g., 192.168.1.1). 
+It uniquely identifies a device on a network.
 
 Local Network and Private IPs
-Devices connected to the same router (e.g., multiple laptops on the same Wi-Fi network) can communicate using private IP addresses (e.g., 192.168.x.x).
+Devices connected to the same router (e.g., multiple laptops on the same Wi-Fi network) can communicate using private IP addresses 
+(e.g., 192.168.x.x).
 
 If a service is running on one device, another device must use:
 http://<private-ip>:<port>
@@ -38,7 +44,8 @@ For the service to be accessible by other devices:
 It must be bound to 0.0.0.0 or the private IP (not just 127.0.0.1)
 The port must be open and listening
 
-If these conditions are met, the service becomes discoverable on the network. Tools like port scanners can detect open ports, which is why unsecured services can be exposed unintentionally.
+If these conditions are met, the service becomes discoverable on the network. Tools like port scanners can detect open ports, 
+which is why unsecured services can be exposed unintentionally.
 
 DNS Manipulation and Phishing Risk
 When accessing a website, your system resolves the domain name to an IP address using DNS.
@@ -46,7 +53,8 @@ If this mapping is overridden locally (e.g., via the hosts file), the domain can
 
 instagram.com → 127.0.0.1
 
-This forces the request to go to your own machine instead of the real server. If a fake service is running locally, it can mimic the original site and capture credentials, making this a common phishing technique.
+This forces the request to go to your own machine instead of the real server. If a fake service is running locally, it can mimic 
+the original site and capture credentials, making this a common phishing technique.
 
 Self-Hosting vs Cloud Hosting
 Self-hosting involves running services on your own hardware. This provides full control but introduces risks:
@@ -62,7 +70,8 @@ Redundant infrastructure
 This significantly improves uptime and accessibility compared to local hosting.
 
 Virtual Machines (VMs)
-A virtual machine is a software-based emulation of a physical computer. A hypervisor sits between the hardware and VMs, allocating CPU, memory, and storage.
+A virtual machine is a software-based emulation of a physical computer. A hypervisor sits between the hardware and VMs, 
+allocating CPU, memory, and storage.
 
 Execution path:
 Application → Guest OS → Hypervisor → Hardware
@@ -83,7 +92,8 @@ Better performance under heavy workloads
 Unlike VMs, resources are not shared or dynamically reallocated, but performance is more predictable and efficient.
 
 SSH (Secure Shell) Protocol
-SSH is a cryptographic protocol used to securely connect to remote systems. It enables remote command execution and secure file transfer.
+SSH is a cryptographic protocol used to securely connect to remote systems. It enables remote command execution and 
+secure file transfer.
 
 Key features:
 Encryption: Protects data in transit
@@ -106,7 +116,8 @@ The server verifies the signature using the public key
 If verified, access is granted without a password.
 
 SSH File Permissions
-Private keys must be securely restricted. If permissions are too open (e.g., 777), SSH rejects the key because it could be accessed by other users.
+Private keys must be securely restricted. If permissions are too open (e.g., 777), SSH rejects the key because 
+it could be accessed by other users.
 
 Secure permissions:
 chmod 600 filename.pem
